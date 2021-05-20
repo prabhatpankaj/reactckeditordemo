@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+# How to create a custom build of CKEditor 5
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+After implementing CKEditor into your app you will notice that it lacks a lot of basic funtions. There are even no alignment or font color options. So the basic build is not very useful at the moment. The only way to extend its capability is by adding new plugins. And the only way to add new plugins is to create a custom build. The process troubles a lot of developers.
 
-## Available Scripts
 
-In the project directory, you can run:
+* Forking the official repo
 
-### `yarn start`
+After cloning go to the root folder of the framework. It's time to separate your editor type from the rest of the framework. I chose classic one so I am going to separate ckeditor5-build-classic. In order to do that just change current directory to the chosen build.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+git clone -b stable https://github.com/ckeditor/ckeditor5
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```
 
-### `yarn test`
+Create copy of ckeditor5-build-classic as ckeditor5-build-classic-custom and rename "@ckeditor/ckeditor5-build-classic" to "@ckeditor/ckeditor5-build-classic" in package.json.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
 
-### `yarn build`
+cp -r ckeditor5/packages/ckeditor5-build-classic ckeditor5-build-classic-custom
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+change current directory to the chosen build.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+cd ckeditor5-build-classic-custom
 
-### `yarn eject`
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+* Adding plugins
+ 
+For example if you want to implement the Alignment plugin you have to add three lines of code to the ckeditor.js file and install the plugin files through npm or yarn.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
+ 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+ClassicEditor.builtinPlugins = [
+   Alignment,
+   ... some other plugins
+ 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+When adding a plugin to the toolbar stick with camel case format (i.e. for the fontcolor plugin it will be fontColor)
 
-## Learn More
+ClassicEditor.defaultConfig = {
+toolbar: {
+   items: [
+      'alignment',
+ 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+npm install @ckeditor/ckeditor5-alignment
+ 
+```
+You have to follow the above steps for any additonal plugin you are going to include in your build.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+You can also make other changes. Maybe you want to delete some default package from your stating build or maybe you wan't to add some of your own plugin or programable button? If so you can do this before committing the changes.
 
-### Code Splitting
+When you finish install all dependencies from package.json.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+npm install
+```
+ 
+* Testing the build
+ 
 
-### Analyzing the Bundle Size
+Time to create your build. The command below generates build folder with essentials files which are basically your whole customised editor.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+npm run build
 
-### Making a Progressive Web App
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Install and configure generated build in project
 
-### Advanced Configuration
+ Copy the custom build files into your app (anywhere convenient for you but not into the node__modules folder!). Then use npm to install it in the node__modules by specifying the folder path.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```
+cd ..
 
-### Deployment
+npm install ckeditor5-build-classic-custom/
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+``` 
 
-### `yarn build` fails to minify
+Then once again install npm dependencies.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+npm install
+ 
+```
+
+From now one you can import your custom build using the name from the local module registered in package.json.
+
+
